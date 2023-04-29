@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.mr_brick.gps_tracker.R
 
+//Функция для открытия фрагмента
 fun Fragment.openFragment(f: Fragment){
     (activity as AppCompatActivity).supportFragmentManager
         .beginTransaction().setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out)
