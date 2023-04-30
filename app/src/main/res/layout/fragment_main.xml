@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:clickable="true"
-        android:src="@drawable/ic_settings"
+        android:src="@drawable/ic_play"
         app:backgroundTint="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/myPosition"
         app:layout_constraintTop_toBottomOf="@+id/myPosition" />
