@@ -42,10 +42,14 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         registerPermissons()
-        checkLocPermission()
-
     }
 
+    override fun onResume() {
+        super.onResume()
+        checkLocPermission()
+    }
+
+    // Настройка Open Street Maps и сохранение тайлов карты в SharedPreferences
     private fun settingsOsm() {
         Configuration.getInstance().load(
             activity as AppCompatActivity,
@@ -54,9 +58,9 @@ class MainFragment : Fragment() {
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
     }
 
+    // Инициализация Open Street Maps
     private fun initOSM() = with(binding) {
         map.controller.setZoom(20.0)
-        //map.controller.animateTo(GeoPoint(55.0415, 82.9346))
         val mLocProvider = GpsMyLocationProvider(activity)
         val myLocOverlay = MyLocationNewOverlay(mLocProvider, map)
         myLocOverlay.enableMyLocation()
@@ -68,6 +72,7 @@ class MainFragment : Fragment() {
         }
     }
 
+    // Регистрация разрешений на использование местоположения
     private fun registerPermissons() {
         pLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
@@ -81,6 +86,7 @@ class MainFragment : Fragment() {
         }
     }
 
+    // Проверка разрешений
     private fun checkLocPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)//Если версия больше либо равно Android 10
         {
@@ -116,21 +122,20 @@ class MainFragment : Fragment() {
         }
     }
 
-    //включен ли GPS
-    private fun checkLocationEnabled(){
+    // Включен ли GPS
+    private fun checkLocationEnabled() {
         val lManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isEnabledGps = lManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        if (!isEnabledGps){
+        if (!isEnabledGps) { // Если GPS выключен, запускаем диалог
             DialogManager.showLocEnableDialog(
                 activity as AppCompatActivity,
-                object : DialogManager.Listener{
+                object : DialogManager.Listener {
                     override fun onClick() {
-                        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) // Запускаем GPS
                     }
-
                 }
             )
-        }else {
+        } else {
             showToast("Location enabled")
         }
     }

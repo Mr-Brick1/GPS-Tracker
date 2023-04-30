@@ -10,5 +10,7 @@
     <string name="track_color_summary">Choose Track color</string>
     <string name="location_disabled">Location disabled</string>
     <string name="location_dialog_message">Do you want enabled GPS?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 </resources>
