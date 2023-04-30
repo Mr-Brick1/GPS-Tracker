@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.mr_brick.gps_tracker.databinding.FragmentMainBinding
+import com.mr_brick.gps_tracker.location.LocationService
 import com.mr_brick.gps_tracker.utils.DialogManager
 import com.mr_brick.gps_tracker.utils.checkPermisson
 import com.mr_brick.gps_tracker.utils.showToast
@@ -42,6 +43,11 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         registerPermissons()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity?.startForegroundService(Intent(activity, LocationService::class.java))
+        } else {
+            activity?.startService(Intent(activity, LocationService::class.java))
+        }
     }
 
     override fun onResume() {
