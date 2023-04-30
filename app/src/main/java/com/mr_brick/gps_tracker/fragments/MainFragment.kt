@@ -2,9 +2,11 @@ package com.mr_brick.gps_tracker.fragments
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -119,7 +121,15 @@ class MainFragment : Fragment() {
         val lManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isEnabledGps = lManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         if (!isEnabledGps){
-            DialogManager.showLocEnableDialog(activity as AppCompatActivity)
+            DialogManager.showLocEnableDialog(
+                activity as AppCompatActivity,
+                object : DialogManager.Listener{
+                    override fun onClick() {
+                        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                    }
+
+                }
+            )
         }else {
             showToast("Location enabled")
         }
