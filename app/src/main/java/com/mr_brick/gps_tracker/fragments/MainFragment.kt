@@ -1,12 +1,15 @@
 package com.mr_brick.gps_tracker.fragments
 
 import android.Manifest
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -17,8 +20,10 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.mr_brick.gps_tracker.R
 import com.mr_brick.gps_tracker.databinding.FragmentMainBinding
+import com.mr_brick.gps_tracker.location.LocationModel
 import com.mr_brick.gps_tracker.location.LocationService
 import com.mr_brick.gps_tracker.utils.DialogManager
 import com.mr_brick.gps_tracker.utils.TimeUtils
@@ -55,6 +60,7 @@ class MainFragment : Fragment() {
         setOnClicks()
         checkServiceState()
         updateTime()
+        registerLocReciever()
     }
 
     override fun onResume() {
@@ -220,7 +226,20 @@ class MainFragment : Fragment() {
         }
     }
 
+    private val reciever = object : BroadcastReceiver(){
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == LocationService.LOC_MODEL_INTENT){
+                val locModel = intent.getSerializableExtra(LocationService.LOC_MODEL_INTENT) as LocationModel
+                Log.d("MyLog", "Main Fragment Distance: ${locModel.distance}")
+            }
+        }
+    }
 
+    private fun registerLocReciever(){
+        val locFilter = IntentFilter(LocationService.LOC_MODEL_INTENT)
+        LocalBroadcastManager.getInstance(activity as AppCompatActivity)
+            .registerReceiver(reciever, locFilter)
+    }
 
     companion object {
         @JvmStatic

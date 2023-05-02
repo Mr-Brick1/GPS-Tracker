@@ -68,7 +68,7 @@ class LocationService : Service() {
             }
             lastLocation = currentLocation
 
-            Log.d("MyLog", "Distance: $distance")
+
 
         }
     }
