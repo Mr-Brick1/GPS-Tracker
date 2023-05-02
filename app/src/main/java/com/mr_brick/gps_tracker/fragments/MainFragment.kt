@@ -16,22 +16,28 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import com.mr_brick.gps_tracker.R
 import com.mr_brick.gps_tracker.databinding.FragmentMainBinding
 import com.mr_brick.gps_tracker.location.LocationService
 import com.mr_brick.gps_tracker.utils.DialogManager
+import com.mr_brick.gps_tracker.utils.TimeUtils
 import com.mr_brick.gps_tracker.utils.checkPermisson
 import com.mr_brick.gps_tracker.utils.showToast
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import java.util.*
 
 class MainFragment : Fragment() {
 
-    private var isServiceRunning: Boolean = false
+    private var timer : Timer? = null // Таймер
+    private var startTime = 0L // Время старта Таймера
+    private val timeData = MutableLiveData<String>()
+    private var isServiceRunning: Boolean = false // Запущен ли сервис
     private lateinit var binding: FragmentMainBinding
-    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
+    private lateinit var pLauncher: ActivityResultLauncher<Array<String>> // Регистрация разрешений
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,6 +54,7 @@ class MainFragment : Fragment() {
         registerPermissons()
         setOnClicks()
         checkServiceState()
+        updateTime()
     }
 
     override fun onResume() {
@@ -123,12 +130,37 @@ class MainFragment : Fragment() {
         }
     }
 
+    private fun updateTime(){
+        timeData.observe(viewLifecycleOwner){
+            binding.time.text = it
+        }
+    }
+
+
+    private fun startTimer() {
+        timer?.cancel()
+        timer = Timer()
+        startTime = System.currentTimeMillis()
+        timer?.schedule(object : TimerTask() {
+            override fun run() {
+                activity?.runOnUiThread { // Запуск в основном потоке
+                    timeData.value = getCurentTime()
+                }
+            }
+        }, 1000, 1000)
+    }
+
+    private fun getCurentTime() : String{
+        return "Time: ${TimeUtils.getTime(System.currentTimeMillis() - startTime)}"
+    }
+
     private fun startStopService() {
         if (!isServiceRunning) {
             startLocService()
         } else {
             activity?.stopService(Intent(activity, LocationService::class.java))
             binding.StartStop.setImageResource(R.drawable.ic_play)
+            timer?.cancel()
         }
         isServiceRunning = !isServiceRunning
     }
@@ -140,6 +172,7 @@ class MainFragment : Fragment() {
             activity?.startService(Intent(activity, LocationService::class.java))
         }
         binding.StartStop.setImageResource(R.drawable.ic_stop)
+        startTimer()
     }
 
     private fun checkServiceState() {
@@ -184,6 +217,7 @@ class MainFragment : Fragment() {
             pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
         }
     }
+
 
 
     companion object {
