@@ -19,8 +19,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.mr_brick.gps_tracker.MainViewModel
 import com.mr_brick.gps_tracker.R
 import com.mr_brick.gps_tracker.databinding.FragmentMainBinding
 import com.mr_brick.gps_tracker.location.LocationModel
@@ -39,10 +41,11 @@ class MainFragment : Fragment() {
 
     private var timer : Timer? = null // Таймер
     private var startTime = 0L // Время старта Таймера
-    private val timeData = MutableLiveData<String>()
+
     private var isServiceRunning: Boolean = false // Запущен ли сервис
     private lateinit var binding: FragmentMainBinding
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>> // Регистрация разрешений
+    private val model : MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +64,7 @@ class MainFragment : Fragment() {
         checkServiceState()
         updateTime()
         registerLocReciever()
+        locationUpdates()
     }
 
     override fun onResume() {
@@ -137,7 +141,7 @@ class MainFragment : Fragment() {
     }
 
     private fun updateTime(){
-        timeData.observe(viewLifecycleOwner){
+        model.timeData.observe(viewLifecycleOwner){
             binding.time.text = it
         }
     }
@@ -150,7 +154,7 @@ class MainFragment : Fragment() {
         timer?.schedule(object : TimerTask() {
             override fun run() {
                 activity?.runOnUiThread { // Запуск в основном потоке
-                    timeData.value = getCurentTime()
+                    model.timeData.value = getCurentTime()
                 }
             }
         }, 1000, 1000)
@@ -230,7 +234,7 @@ class MainFragment : Fragment() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == LocationService.LOC_MODEL_INTENT){
                 val locModel = intent.getSerializableExtra(LocationService.LOC_MODEL_INTENT) as LocationModel
-                Log.d("MyLog", "Main Fragment Distance: ${locModel.distance}")
+                model.locationUpdates.value = locModel
             }
         }
     }
@@ -239,6 +243,16 @@ class MainFragment : Fragment() {
         val locFilter = IntentFilter(LocationService.LOC_MODEL_INTENT)
         LocalBroadcastManager.getInstance(activity as AppCompatActivity)
             .registerReceiver(reciever, locFilter)
+    }
+
+    private fun locationUpdates(){
+        model.locationUpdates.observe(viewLifecycleOwner){
+            // заменить хард код
+            val distance = "Distance: ${String.format("%.1f", it.distance)} m"
+            val velocity = "Velocity: ${String.format("%.1f", 3.6 * it.velocity)} km/h"
+            binding.distance.text = distance
+            binding.velosity.text = velocity
+        }
     }
 
     companion object {

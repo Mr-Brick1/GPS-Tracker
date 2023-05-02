@@ -1,6 +1,7 @@
 package com.mr_brick.gps_tracker.location
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -79,6 +80,7 @@ class LocationService : Service() {
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     private fun startNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notifChanel = NotificationChannel(
