@@ -33,7 +33,6 @@ class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,50 +44,10 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Настройка, присваивание слушателей, состояние сервиса
         registerPermissons()
         setOnClicks()
         checkServiceState()
-    }
-
-    private fun setOnClicks() = with(binding){
-        val listener = onClicks()
-        StartStop.setOnClickListener(listener)
-
-    }
-
-    private fun onClicks(): OnClickListener{
-        return OnClickListener {
-            when(it.id){
-                R.id.StartStop -> startStopService()
-
-            }
-        }
-    }
-
-    private fun startStopService(){
-        if (!isServiceRunning){
-            startLocService()
-        } else {
-            activity?.stopService(Intent(activity, LocationService::class.java))
-            binding.StartStop.setImageResource(R.drawable.ic_play)
-        }
-        isServiceRunning = !isServiceRunning
-    }
-
-    private fun checkServiceState(){
-        isServiceRunning = LocationService.isRunning
-        if (isServiceRunning){
-            binding.StartStop.setImageResource(R.drawable.ic_stop)
-        }
-    }
-
-    private fun startLocService(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            activity?.startForegroundService(Intent(activity, LocationService::class.java))
-        } else {
-            activity?.startService(Intent(activity, LocationService::class.java))
-        }
-        binding.StartStop.setImageResource(R.drawable.ic_stop)
     }
 
     override fun onResume() {
@@ -105,6 +64,20 @@ class MainFragment : Fragment() {
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
     }
 
+    // Регистрация разрешений на использование местоположения
+    private fun registerPermissons() {
+        pLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) {
+            if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+                initOSM()
+                checkLocationEnabled()
+            } else {
+                showToast("Вы не дали разрешение на использование местоположения!")
+            }
+        }
+    }
+
     // Инициализация Open Street Maps
     private fun initOSM() = with(binding) {
         map.controller.setZoom(20.0)
@@ -119,17 +92,60 @@ class MainFragment : Fragment() {
         }
     }
 
-    // Регистрация разрешений на использование местоположения
-    private fun registerPermissons() {
-        pLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) {
-            if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
-                initOSM()
-                checkLocationEnabled()
-            } else {
-                showToast("Вы не дали разрешение на использование местоположения!")
+    // Включен ли GPS
+    private fun checkLocationEnabled() {
+        val lManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val isEnabledGps = lManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        if (!isEnabledGps) { // Если GPS выключен, запускаем диалог
+            DialogManager.showLocEnableDialog(
+                activity as AppCompatActivity,
+                object : DialogManager.Listener {
+                    override fun onClick() {
+                        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) // Запускаем GPS
+                    }
+                }
+            )
+        } else {
+            showToast("Location enabled")
+        }
+    }
+
+    private fun setOnClicks() = with(binding) {
+        val listener = onClicks()
+        StartStop.setOnClickListener(listener)
+    }
+
+    private fun onClicks(): OnClickListener {
+        return OnClickListener {
+            when (it.id) {
+                R.id.StartStop -> startStopService()
             }
+        }
+    }
+
+    private fun startStopService() {
+        if (!isServiceRunning) {
+            startLocService()
+        } else {
+            activity?.stopService(Intent(activity, LocationService::class.java))
+            binding.StartStop.setImageResource(R.drawable.ic_play)
+        }
+        isServiceRunning = !isServiceRunning
+    }
+
+    private fun startLocService() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity?.startForegroundService(Intent(activity, LocationService::class.java))
+        } else {
+            activity?.startService(Intent(activity, LocationService::class.java))
+        }
+        binding.StartStop.setImageResource(R.drawable.ic_stop)
+    }
+
+    private fun checkServiceState() {
+        isServiceRunning = LocationService.isRunning
+        if (isServiceRunning) {
+            binding.StartStop.setImageResource(R.drawable.ic_stop)
         }
     }
 
@@ -169,23 +185,6 @@ class MainFragment : Fragment() {
         }
     }
 
-    // Включен ли GPS
-    private fun checkLocationEnabled() {
-        val lManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val isEnabledGps = lManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        if (!isEnabledGps) { // Если GPS выключен, запускаем диалог
-            DialogManager.showLocEnableDialog(
-                activity as AppCompatActivity,
-                object : DialogManager.Listener {
-                    override fun onClick() {
-                        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) // Запускаем GPS
-                    }
-                }
-            )
-        } else {
-            showToast("Location enabled")
-        }
-    }
 
     companion object {
         @JvmStatic

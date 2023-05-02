@@ -12,6 +12,7 @@ import com.mr_brick.gps_tracker.MainActivity
 import com.mr_brick.gps_tracker.R
 
 class LocationService : Service() {
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
@@ -24,7 +25,6 @@ class LocationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-
     }
 
     override fun onDestroy() {
@@ -61,8 +61,6 @@ class LocationService : Service() {
             .build()
 
         startForeground(99, notification)
-
-
     }
 
     companion object {
