@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ContentInfoCompat.Flags
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
@@ -249,11 +250,19 @@ class MainFragment : Fragment() {
         model.locationUpdates.observe(viewLifecycleOwner){
             // заменить хард код
             val distance = "Distance: ${String.format("%.1f", it.distance)} m"
-            val velocity = "Velocity: ${String.format("%.1f", 3.6 * it.velocity)} km/h"
+            val velocity = "Velocity: ${String.format("%.1f", 3.6f * it.velocity)} km/h"
+            val aVelocity = "Average velocity: ${getAverageSpeed(it.distance)} km/h"
             binding.distance.text = distance
             binding.velosity.text = velocity
+            binding.averageVelocity.text = aVelocity
         }
     }
+
+    // Метод для получения средней скорости движения
+    private fun getAverageSpeed(distance : Float): String{
+        return String.format("%1.f", 3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000.0f)))
+    }
+
 
     companion object {
         @JvmStatic
