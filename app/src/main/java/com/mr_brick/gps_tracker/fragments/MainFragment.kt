@@ -5,11 +5,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -18,10 +18,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ContentInfoCompat.Flags
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.mr_brick.gps_tracker.MainViewModel
 import com.mr_brick.gps_tracker.R
@@ -34,16 +32,21 @@ import com.mr_brick.gps_tracker.utils.checkPermisson
 import com.mr_brick.gps_tracker.utils.showToast
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.*
 
 class MainFragment : Fragment() {
 
+    private var pl : Polyline? = null
+
     private var timer : Timer? = null // Таймер
     private var startTime = 0L // Время старта Таймера
 
     private var isServiceRunning: Boolean = false // Запущен ли сервис
+    private var firstStart : Boolean = true // Первый запуск
     private lateinit var binding: FragmentMainBinding
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>> // Регистрация разрешений
     private val model : MainViewModel by activityViewModels()
@@ -73,6 +76,13 @@ class MainFragment : Fragment() {
         checkLocPermission()
     }
 
+
+    override fun onDetach() {
+        super.onDetach()
+        LocalBroadcastManager.getInstance(activity as AppCompatActivity)
+            .unregisterReceiver(reciever)
+    }
+
     // Настройка Open Street Maps и сохранение тайлов карты в SharedPreferences
     private fun settingsOsm() {
         Configuration.getInstance().load(
@@ -98,6 +108,8 @@ class MainFragment : Fragment() {
 
     // Инициализация Open Street Maps
     private fun initOSM() = with(binding) {
+        pl = Polyline()
+        pl?.outlinePaint?.color = Color.BLUE
         map.controller.setZoom(20.0)
         val mLocProvider = GpsMyLocationProvider(activity)
         val myLocOverlay = MyLocationNewOverlay(mLocProvider, map)
@@ -106,6 +118,7 @@ class MainFragment : Fragment() {
         myLocOverlay.runOnFirstFix {
             map.overlays.clear()
             map.overlays.add(myLocOverlay)
+            map.overlays.add(pl)
 
         }
     }
@@ -255,13 +268,36 @@ class MainFragment : Fragment() {
             binding.distance.text = distance
             binding.velosity.text = velocity
             binding.averageVelocity.text = aVelocity
+            updatePolyLine(it.geoPointsList)
         }
     }
 
     // Метод для получения средней скорости движения
     private fun getAverageSpeed(distance : Float): String{
-        return String.format("%1.f", 3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000.0f)))
+        return String.format("%.1f", 3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000.0f)))
     }
+
+    // Добавить последнюю зафиксированную точку на карту
+    private fun addLastPoint(list : List<GeoPoint>){
+        pl?.addPoint(list[list.size - 1])
+    }
+
+    // Заполнить список точек маршрута
+    private fun fillPolyLine(list : List<GeoPoint>){
+        list.forEach {
+            pl?.addPoint(it)
+        }
+    }
+
+    private fun updatePolyLine(list : List<GeoPoint>){
+        if(list.size > 1 && firstStart){
+            fillPolyLine(list)
+            firstStart = false
+        } else {
+            addLastPoint(list)
+        }
+    }
+
 
 
     companion object {
