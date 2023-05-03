@@ -2,7 +2,11 @@ package com.mr_brick.gps_tracker.utils
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.LayoutInflater
 import com.mr_brick.gps_tracker.R
+import com.mr_brick.gps_tracker.databinding.SaveDialogBinding
 
 object DialogManager {
     fun showLocEnableDialog(context: Context, listener: Listener) {
@@ -19,7 +23,23 @@ object DialogManager {
         dialog.show()
     }
 
-    fun
+    fun showSaveDialog(context: Context, listener: Listener){
+        val builder = AlertDialog.Builder(context)
+        val binding = SaveDialogBinding.inflate(LayoutInflater.from(context), null, false)
+        builder.setView(binding.root)
+        val dialog = builder.create()
+        binding.apply {
+            bSave.setOnClickListener {
+                listener.onClick()
+                dialog.dismiss()
+            }
+            bCancel.setOnClickListener {
+                dialog.dismiss()
+            }
+        }
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+    }
 
     interface Listener {
         fun onClick()
