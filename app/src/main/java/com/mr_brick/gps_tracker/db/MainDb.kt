@@ -8,6 +8,8 @@ import androidx.room.RoomDatabase
 @Database (entities = [TrackItem::class], version = 1)
 abstract class MainDb : RoomDatabase() {
 
+    abstract fun getDao(): Dao
+
     companion object{
         @Volatile
         var INSTANCE : MainDb? = null
@@ -23,6 +25,8 @@ abstract class MainDb : RoomDatabase() {
                 return instance
             }
         }
+
+
     }
 
 }
