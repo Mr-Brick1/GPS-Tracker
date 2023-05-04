@@ -10,6 +10,7 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -41,7 +42,7 @@ import java.util.*
 
 class MainFragment : Fragment() {
 
-    private var trackItem: TrackItem? = null
+    private var locationModel: LocationModel? = null
 
     private var pl : Polyline? = null
 
@@ -181,6 +182,15 @@ class MainFragment : Fragment() {
         return "Time: ${TimeUtils.getTime(System.currentTimeMillis() - startTime)}"
     }
 
+    private fun geoPointsToString(list: List<GeoPoint>): String{
+        val strBldr = StringBuilder()
+        list.forEach {
+            strBldr.append("${it.latitude},${it.longitude}/")
+        }
+        Log.d("MyLog", "Points: $strBldr")
+        return strBldr.toString()
+    }
+
     private fun startStopService() {
         if (!isServiceRunning) {
             startLocService()
@@ -189,7 +199,7 @@ class MainFragment : Fragment() {
             binding.StartStop.setImageResource(R.drawable.ic_play)
             timer?.cancel()
             DialogManager.showSaveDialog(requireContext(),
-                trackItem,
+                getTrackItem(),
                 object : DialogManager.Listener{
                 override fun onClick() {
                     showToast("Track saved!")
@@ -197,6 +207,17 @@ class MainFragment : Fragment() {
             })
         }
         isServiceRunning = !isServiceRunning
+    }
+
+    private fun getTrackItem(): TrackItem {
+        return TrackItem(
+            null,
+            getCurentTime(),
+            TimeUtils.getDate(),
+            String.format("%.1f", locationModel?.distance),
+            getAverageSpeed(locationModel?.distance ?: 0.0f),
+            geoPointsToString(locationModel?.geoPointsList ?: listOf())
+        )
     }
 
     private fun startLocService() {
@@ -278,14 +299,15 @@ class MainFragment : Fragment() {
             binding.distance.text = distance
             binding.velosity.text = velocity
             binding.averageVelocity.text = aVelocity
-            trackItem = TrackItem(
-                null,
-                getCurentTime(),
-                TimeUtils.getDate(),
-                String.format("%.1f", it.distance),
-                getAverageSpeed(it.distance),
-                ""
-            )
+            locationModel = it
+//            trackItem = TrackItem(
+//                null,
+//                getCurentTime(),
+//                TimeUtils.getDate(),
+//                String.format("%.1f", it.distance),
+//                getAverageSpeed(it.distance),
+//                geoPointsToString(it.geoPointsList)
+//            )
             updatePolyLine(it.geoPointsList)
         }
     }
