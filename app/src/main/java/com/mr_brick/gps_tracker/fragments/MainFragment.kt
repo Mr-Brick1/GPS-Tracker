@@ -22,9 +22,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.mr_brick.gps_tracker.MainApp
 import com.mr_brick.gps_tracker.MainViewModel
 import com.mr_brick.gps_tracker.R
 import com.mr_brick.gps_tracker.databinding.FragmentMainBinding
+import com.mr_brick.gps_tracker.db.MainDb
 import com.mr_brick.gps_tracker.db.TrackItem
 import com.mr_brick.gps_tracker.location.LocationModel
 import com.mr_brick.gps_tracker.location.LocationService
@@ -53,7 +55,9 @@ class MainFragment : Fragment() {
     private var firstStart : Boolean = true // Первый запуск
     private lateinit var binding: FragmentMainBinding
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>> // Регистрация разрешений
-    private val model : MainViewModel by activityViewModels()
+    private val model : MainViewModel by activityViewModels{
+        MainViewModel.ViewModelFactory((requireContext().applicationContext as MainApp).database)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,6 +77,9 @@ class MainFragment : Fragment() {
         updateTime()
         registerLocReciever()
         locationUpdates()
+        model.tracks.observe(viewLifecycleOwner){
+            Log.d("MyLog", "list size: ${it.size}")
+        }
     }
 
     override fun onResume() {
@@ -198,11 +205,13 @@ class MainFragment : Fragment() {
             activity?.stopService(Intent(activity, LocationService::class.java))
             binding.StartStop.setImageResource(R.drawable.ic_play)
             timer?.cancel()
+            val track = getTrackItem()
             DialogManager.showSaveDialog(requireContext(),
-                getTrackItem(),
+                track,
                 object : DialogManager.Listener{
                 override fun onClick() {
                     showToast("Track saved!")
+                    model.insertTrack(track)
                 }
             })
         }
