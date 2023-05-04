@@ -24,6 +24,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.mr_brick.gps_tracker.MainViewModel
 import com.mr_brick.gps_tracker.R
 import com.mr_brick.gps_tracker.databinding.FragmentMainBinding
+import com.mr_brick.gps_tracker.db.TrackItem
 import com.mr_brick.gps_tracker.location.LocationModel
 import com.mr_brick.gps_tracker.location.LocationService
 import com.mr_brick.gps_tracker.utils.DialogManager
@@ -39,6 +40,8 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.*
 
 class MainFragment : Fragment() {
+
+    private var trackItem: TrackItem? = null
 
     private var pl : Polyline? = null
 
@@ -185,7 +188,9 @@ class MainFragment : Fragment() {
             activity?.stopService(Intent(activity, LocationService::class.java))
             binding.StartStop.setImageResource(R.drawable.ic_play)
             timer?.cancel()
-            DialogManager.showSaveDialog(requireContext(),object : DialogManager.Listener{
+            DialogManager.showSaveDialog(requireContext(),
+                trackItem,
+                object : DialogManager.Listener{
                 override fun onClick() {
                     showToast("Track saved!")
                 }
@@ -273,6 +278,14 @@ class MainFragment : Fragment() {
             binding.distance.text = distance
             binding.velosity.text = velocity
             binding.averageVelocity.text = aVelocity
+            trackItem = TrackItem(
+                null,
+                getCurentTime(),
+                TimeUtils.getDate(),
+                String.format("%.1f", it.distance),
+                getAverageSpeed(it.distance),
+                ""
+            )
             updatePolyLine(it.geoPointsList)
         }
     }
