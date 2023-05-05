@@ -12,10 +12,10 @@ import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import com.google.android.gms.location.*
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.mr_brick.gps_tracker.MainActivity
@@ -58,8 +58,10 @@ class LocationService : Service() {
             super.onLocationResult(lResult)
             val currentLocation = lResult.lastLocation
             if (lastLocation != null && currentLocation != null) {
-                distance += lastLocation?.distanceTo((currentLocation))!!
-                geoPointsList.add(GeoPoint(currentLocation.latitude, currentLocation.longitude))
+                if(currentLocation.speed > 0.4) {
+                    distance += lastLocation?.distanceTo((currentLocation))!!
+                    geoPointsList.add(GeoPoint(currentLocation.latitude, currentLocation.longitude))
+                }
                 val locModel = LocationModel(
                     currentLocation.speed,
                     distance,
@@ -113,8 +115,10 @@ class LocationService : Service() {
     }
 
     private fun initLocation(){
-        locRequest = LocationRequest.Builder(PRIORITY_HIGH_ACCURACY,5000)
-            .setMinUpdateIntervalMillis(5000)
+        val updateInterval = PreferenceManager.getDefaultSharedPreferences(this)
+            .getString("update_time_key", "3000")?.toLong() ?: 3000
+        locRequest = LocationRequest.Builder(PRIORITY_HIGH_ACCURACY,updateInterval)
+            .setMinUpdateIntervalMillis(updateInterval)
             .build()
 
         locProvider = LocationServices.getFusedLocationProviderClient(baseContext)

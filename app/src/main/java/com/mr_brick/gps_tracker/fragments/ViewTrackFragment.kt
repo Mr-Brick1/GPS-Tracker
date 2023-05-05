@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.preference.PreferenceManager
 import com.mr_brick.gps_tracker.MainApp
 import com.mr_brick.gps_tracker.MainViewModel
 import com.mr_brick.gps_tracker.R
@@ -82,6 +83,10 @@ class ViewTrackFragment : Fragment() {
 
     private fun getPolyLine(geoPoints: String): Polyline{
         val polyline = Polyline()
+        polyline.outlinePaint.color = Color.parseColor(
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .getString("color_key", "#0000FF")
+        )
         val list = geoPoints.split("/")
         list.forEach {
             if(it.isEmpty()) return@forEach

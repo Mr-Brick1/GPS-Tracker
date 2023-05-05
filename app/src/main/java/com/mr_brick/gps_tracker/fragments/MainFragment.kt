@@ -22,11 +22,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import com.mr_brick.gps_tracker.MainApp
 import com.mr_brick.gps_tracker.MainViewModel
 import com.mr_brick.gps_tracker.R
 import com.mr_brick.gps_tracker.databinding.FragmentMainBinding
-import com.mr_brick.gps_tracker.db.MainDb
 import com.mr_brick.gps_tracker.db.TrackItem
 import com.mr_brick.gps_tracker.location.LocationModel
 import com.mr_brick.gps_tracker.location.LocationService
@@ -50,6 +50,8 @@ class MainFragment : Fragment() {
 
     private var timer : Timer? = null // Таймер
     private var startTime = 0L // Время старта Таймера
+
+    private lateinit var myLocOverlay: MyLocationNewOverlay
 
     private var isServiceRunning: Boolean = false // Запущен ли сервис
     private var firstStart : Boolean = true // Первый запуск
@@ -76,14 +78,14 @@ class MainFragment : Fragment() {
         checkServiceState()
         updateTime()
         registerLocReciever()
-
+        locationUpdates()
 
     }
 
     override fun onResume() {
         super.onResume()
         checkLocPermission()
-        locationUpdates()
+        firstStart = true
     }
 
 
@@ -119,16 +121,19 @@ class MainFragment : Fragment() {
     // Инициализация Open Street Maps
     private fun initOSM() = with(binding) {
         pl = Polyline()
-        pl?.outlinePaint?.color = Color.BLUE
+        pl?.outlinePaint?.color = Color.parseColor(
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .getString("color_key", "#0000FF")
+        )
         map.controller.setZoom(20.0)
         val mLocProvider = GpsMyLocationProvider(activity)
-        val myLocOverlay = MyLocationNewOverlay(mLocProvider, map)
+        myLocOverlay = MyLocationNewOverlay(mLocProvider, map)
         myLocOverlay.enableMyLocation()
         myLocOverlay.enableFollowLocation()
         myLocOverlay.runOnFirstFix {
             map.overlays.clear()
-            map.overlays.add(myLocOverlay)
             map.overlays.add(pl)
+            map.overlays.add(myLocOverlay)
 
         }
     }
@@ -154,14 +159,21 @@ class MainFragment : Fragment() {
     private fun setOnClicks() = with(binding) {
         val listener = onClicks()
         StartStop.setOnClickListener(listener)
+        myPosition.setOnClickListener(listener)
     }
 
     private fun onClicks(): OnClickListener {
         return OnClickListener {
             when (it.id) {
                 R.id.StartStop -> startStopService()
+                R.id.myPosition -> centerLocation()
             }
         }
+    }
+
+    private fun centerLocation(){
+        binding.map.controller.animateTo(myLocOverlay.myLocation)
+        myLocOverlay.enableFollowLocation()
     }
 
     private fun updateTime(){
@@ -327,7 +339,7 @@ class MainFragment : Fragment() {
 
     // Добавить последнюю зафиксированную точку на карту
     private fun addLastPoint(list : List<GeoPoint>){
-        pl?.addPoint(list[list.size - 1])
+        if(list.isNotEmpty()) pl?.addPoint(list[list.size - 1])
     }
 
     // Заполнить список точек маршрута
