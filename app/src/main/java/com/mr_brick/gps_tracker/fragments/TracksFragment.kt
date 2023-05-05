@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.mr_brick.gps_tracker.MainApp
 import com.mr_brick.gps_tracker.MainViewModel
 import com.mr_brick.gps_tracker.databinding.TracksBinding
@@ -59,10 +58,13 @@ class TracksFragment : Fragment(), TrackAdapter.Listener {
         fun newInstance() = TracksFragment()
     }
 
-    override fun onClick(track: TrackItem, type: TrackAdapter.ClickType) {
-        when(type){
+    override fun onClick(track: TrackItem, clickType: TrackAdapter.ClickType) {
+        when(clickType){
             TrackAdapter.ClickType.DELETE -> model.deleteTrack(track)
-            TrackAdapter.ClickType.OPEN -> openFragment(ViewTrackFragment.newInstance())
+            TrackAdapter.ClickType.OPEN -> {
+                model.currentTrack.value = track
+                openFragment(ViewTrackFragment.newInstance())
+            }
         }
     }
 
