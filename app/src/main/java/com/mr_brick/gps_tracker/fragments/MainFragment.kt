@@ -76,13 +76,14 @@ class MainFragment : Fragment() {
         checkServiceState()
         updateTime()
         registerLocReciever()
-        locationUpdates()
+
 
     }
 
     override fun onResume() {
         super.onResume()
         checkLocPermission()
+        locationUpdates()
     }
 
 
