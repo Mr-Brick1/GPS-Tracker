@@ -13,6 +13,7 @@ import com.mr_brick.gps_tracker.MainViewModel
 import com.mr_brick.gps_tracker.databinding.TracksBinding
 import com.mr_brick.gps_tracker.db.TrackAdapter
 import com.mr_brick.gps_tracker.db.TrackItem
+import com.mr_brick.gps_tracker.utils.openFragment
 
 class TracksFragment : Fragment(), TrackAdapter.Listener {
 
@@ -53,17 +54,16 @@ class TracksFragment : Fragment(), TrackAdapter.Listener {
         rcView.adapter = adapter
     }
 
-    private fun a(){
-
-    }
-
     companion object {
         @JvmStatic
         fun newInstance() = TracksFragment()
     }
 
-    override fun onClick(track: TrackItem) {
-        model.deleteTrack(track)
+    override fun onClick(track: TrackItem, type: TrackAdapter.ClickType) {
+        when(type){
+            TrackAdapter.ClickType.DELETE -> model.deleteTrack(track)
+            TrackAdapter.ClickType.OPEN -> openFragment(ViewTrackFragment.newInstance())
+        }
     }
 
 }
