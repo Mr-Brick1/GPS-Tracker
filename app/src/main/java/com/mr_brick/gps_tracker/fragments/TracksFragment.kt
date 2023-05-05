@@ -12,8 +12,9 @@ import com.mr_brick.gps_tracker.MainApp
 import com.mr_brick.gps_tracker.MainViewModel
 import com.mr_brick.gps_tracker.databinding.TracksBinding
 import com.mr_brick.gps_tracker.db.TrackAdapter
+import com.mr_brick.gps_tracker.db.TrackItem
 
-class TracksFragment : Fragment() {
+class TracksFragment : Fragment(), TrackAdapter.Listener {
 
     private lateinit var binding: TracksBinding
     private lateinit var adapter: TrackAdapter
@@ -47,7 +48,7 @@ class TracksFragment : Fragment() {
     }
 
     private fun initRcView() = with(binding){
-        adapter = TrackAdapter()
+        adapter = TrackAdapter(this@TracksFragment)
         rcView.layoutManager = LinearLayoutManager(requireContext())
         rcView.adapter = adapter
     }
@@ -59,6 +60,10 @@ class TracksFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = TracksFragment()
+    }
+
+    override fun onClick(track: TrackItem) {
+        model.deleteTrack(track)
     }
 
 }
