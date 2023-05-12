@@ -106,8 +106,8 @@ class LocationService : Service() {
         val notification = NotificationCompat.Builder(
             this,
             CHANNEL_ID
-        ).setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Tracker running!")
+        ).setSmallIcon(R.drawable.ic_location_tracking)
+            .setContentTitle("Tracking is active!")
             .setContentIntent(pendingIntent)
             .build()
 

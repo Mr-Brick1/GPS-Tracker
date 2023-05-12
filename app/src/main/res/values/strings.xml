@@ -10,7 +10,42 @@
     <string name="track_color_summary">Choose Track color</string>
     <string name="location_disabled">Location disabled</string>
     <string name="location_dialog_message">Do you want enabled GPS?</string>
+
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
+    <string name="date_example">1 Apr. 2023</string>
+
+    <string name="velocity_label">Velocity: </string>
+    <string name="velocity_example">Velocity: 0 km/h </string>
+    <string name="velocity_description">Velocity</string>
+
+    <string name="time_label">Time: </string>
+    <string name="time_example">Time: 00:00:00 </string>
+    <string name="time_description">Time</string>
+
+    <string name="distance_label">Distance: </string>
+    <string name="distance_example">Distance: 0 m </string>
+
+    <string name="average_velocity_example">Average velocity: 0 km/h</string>
+
+
+    <string name="delete_description">Delete</string>
+
+
+    <string name="save_track_label">Save this track?</string>
+
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+
+    <string name="zero">0</string>
+
+    <string name="position_description">Position</string>
+    <string name="start_stop_description">Start and Stop</string>
+
+    <string name="empty">Empty</string>
+
+
+
 
 </resources>

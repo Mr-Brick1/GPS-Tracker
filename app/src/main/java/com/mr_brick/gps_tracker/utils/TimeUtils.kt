@@ -8,7 +8,7 @@ import java.util.*
 object TimeUtils {
 
     private val timeFormatter = SimpleDateFormat("HH:mm:ss")
-    private val dateFormatter = SimpleDateFormat("dd/MM/yyyy HH:mm")
+    private val dateFormatter = SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault())
 
     fun getTime(timeInMillis: Long) : String{
         val dateTime = Calendar.getInstance()

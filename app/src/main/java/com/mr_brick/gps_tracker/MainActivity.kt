@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.id_home -> openFragment(MainFragment.newInstance())
                 R.id.id_tracks -> openFragment(TracksFragment.newInstance())
                 R.id.id_settings -> openFragment(SettingsFragment())
-
             }
             true
         }

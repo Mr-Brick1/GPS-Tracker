@@ -22,9 +22,11 @@ class TrackAdapter(private val listener: Listener) : ListAdapter<TrackItem, Trac
         }
 
         fun bind(trackItem: TrackItem) = with(binding) {
+
+            val templateVelocity = "Velocity: ${trackItem.velocity} km/h"
             trackTemp = trackItem
             tvData.text = trackItem.date
-            tvVelocity.text = trackItem.velocity
+            tvVelocity.text = templateVelocity
             tvTime.text = trackItem.time
             tvDistance.text = trackItem.distance
         }

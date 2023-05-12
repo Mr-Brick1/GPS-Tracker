@@ -5,9 +5,10 @@
     android:id="@+id/trackCardItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="3dp"
-    android:layout_marginTop="3dp"
-    android:layout_marginEnd="3dp"
+    android:layout_marginStart="6dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginEnd="6dp"
+    android:layout_marginBottom="4dp"
     app:cardCornerRadius="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,8 +21,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="04/05/2023 13:00"
+            android:text="@string/date_example"
             android:textColor="@color/black"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,8 +31,8 @@
             android:id="@+id/tvDistance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:text="0 m"
+            android:layout_marginEnd="8dp"
+            android:text="@string/zero"
             android:textColor="@color/black"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -41,6 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:contentDescription="@string/velocity_description"
             app:layout_constraintStart_toStartOf="@+id/tvData"
             app:layout_constraintTop_toBottomOf="@+id/tvData"
             app:srcCompat="@drawable/ic_speed" />
@@ -50,8 +53,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:text="Velocity : 0 km/h"
+            android:text="@string/velocity_example"
             android:textColor="@color/black"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/iSpeed"
             app:layout_constraintStart_toEndOf="@+id/iSpeed"
             app:layout_constraintTop_toTopOf="@+id/iSpeed" />
@@ -62,6 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="8dp"
+            android:contentDescription="@string/time_description"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/iSpeed"
             app:layout_constraintTop_toBottomOf="@+id/iSpeed"
@@ -72,8 +77,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:text="Time: 00:00:00"
+            android:text="@string/time_example"
             android:textColor="@color/black"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/iTime"
             app:layout_constraintStart_toEndOf="@+id/iTime"
             app:layout_constraintTop_toTopOf="@+id/iTime" />
@@ -85,9 +91,9 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="16dp"
             android:background="@null"
+            android:contentDescription="@string/delete_description"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/tvDistance"
-            app:layout_constraintStart_toStartOf="@+id/tvDistance"
             app:layout_constraintTop_toBottomOf="@+id/tvDistance"
             app:srcCompat="@drawable/ic_delete" />
     </androidx.constraintlayout.widget.ConstraintLayout>

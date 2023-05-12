@@ -46,6 +46,7 @@ object DialogManager {
             }
         }
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
         dialog.show()
     }
 

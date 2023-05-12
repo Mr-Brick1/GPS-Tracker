@@ -59,7 +59,6 @@ class ViewTrackFragment : Fragment() {
             map.overlays.add(polyline)
             setMarkers(polyline.actualPoints)
             goToStartPosition(polyline.actualPoints[0])
-            polyline.outlinePaint.color = Color.BLUE
         }
     }
 

@@ -14,19 +14,14 @@ class MainViewModel(db: MainDb) : ViewModel() {
     val timeData = MutableLiveData<String>()
     val tracks = dao.getAllTracks().asLiveData()
 
-    fun insertTrack(trackItem: TrackItem) = viewModelScope.launch {
-        dao.insertTrack(trackItem)
-    }
+    fun insertTrack(trackItem: TrackItem) = viewModelScope.launch { dao.insertTrack(trackItem) }
 
-    fun deleteTrack(trackItem: TrackItem) = viewModelScope.launch {
-        dao.deleteTrack(trackItem)
-    }
+    fun deleteTrack(trackItem: TrackItem) = viewModelScope.launch { dao.deleteTrack(trackItem) }
 
-
-
-    class ViewModelFactory(private val db: MainDb) : ViewModelProvider.Factory{
+    class ViewModelFactory(private val db: MainDb) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if(modelClass.isAssignableFrom(MainViewModel::class.java)){
+
+            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
                 return MainViewModel(db) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")

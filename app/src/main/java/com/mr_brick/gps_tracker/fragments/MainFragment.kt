@@ -46,18 +46,18 @@ class MainFragment : Fragment() {
 
     private var locationModel: LocationModel? = null
 
-    private var pl : Polyline? = null
+    private var pl: Polyline? = null
 
-    private var timer : Timer? = null // Таймер
+    private var timer: Timer? = null // Таймер
     private var startTime = 0L // Время старта Таймера
 
     private lateinit var myLocOverlay: MyLocationNewOverlay
 
     private var isServiceRunning: Boolean = false // Запущен ли сервис
-    private var firstStart : Boolean = true // Первый запуск
+    private var firstStart: Boolean = true // Первый запуск
     private lateinit var binding: FragmentMainBinding
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>> // Регистрация разрешений
-    private val model : MainViewModel by activityViewModels{
+    private val model: MainViewModel by activityViewModels {
         MainViewModel.ViewModelFactory((requireContext().applicationContext as MainApp).database)
     }
 
@@ -79,7 +79,6 @@ class MainFragment : Fragment() {
         updateTime()
         registerLocReciever()
         locationUpdates()
-
     }
 
     override fun onResume() {
@@ -121,20 +120,19 @@ class MainFragment : Fragment() {
     // Инициализация Open Street Maps
     private fun initOSM() = with(binding) {
         pl = Polyline()
-        pl?.outlinePaint?.color = Color.parseColor(
-            PreferenceManager.getDefaultSharedPreferences(requireContext())
-                .getString("color_key", "#0000FF")
+        pl?.outlinePaint?.color = Color.parseColor( // Использование цвета маршрута из настроек
+            PreferenceManager.getDefaultSharedPreferences(requireContext()) // Берём из Shared Preferences
+                .getString("color_key", "#0000FF") // по ключу color_key
         )
-        map.controller.setZoom(20.0)
+        map.controller.setZoom(20.0) // Устанавливаем зум
         val mLocProvider = GpsMyLocationProvider(activity)
         myLocOverlay = MyLocationNewOverlay(mLocProvider, map)
-        myLocOverlay.enableMyLocation()
-        myLocOverlay.enableFollowLocation()
-        myLocOverlay.runOnFirstFix {
+        myLocOverlay.enableMyLocation() // Местоположение пользователя
+        myLocOverlay.enableFollowLocation() // Следование экрана за движением
+        myLocOverlay.runOnFirstFix { // Добавляем линию маршрута на оверлей в основном потоке
             map.overlays.clear()
             map.overlays.add(pl)
             map.overlays.add(myLocOverlay)
-
         }
     }
 
@@ -152,16 +150,17 @@ class MainFragment : Fragment() {
                 }
             )
         } else {
-            showToast("Location enabled")
+            showToast("Location enabled!")
         }
     }
-
+    // Установка слушателя нажатий
     private fun setOnClicks() = with(binding) {
         val listener = onClicks()
         StartStop.setOnClickListener(listener)
         myPosition.setOnClickListener(listener)
     }
 
+    // Используем один слушатель для двух кнопок по их id
     private fun onClicks(): OnClickListener {
         return OnClickListener {
             when (it.id) {
@@ -171,6 +170,7 @@ class MainFragment : Fragment() {
         }
     }
 
+    // Центрируем экран на позиции пользователя и начинаем следовать за ним
     private fun centerLocation(){
         binding.map.controller.animateTo(myLocOverlay.myLocation)
         myLocOverlay.enableFollowLocation()
@@ -181,7 +181,6 @@ class MainFragment : Fragment() {
             binding.time.text = it
         }
     }
-
 
     private fun startTimer() {
         timer?.cancel()
@@ -196,18 +195,20 @@ class MainFragment : Fragment() {
         }, 1000, 1000)
     }
 
+    // Получение времени с начала маршрута
     private fun getCurentTime() : String{
         return "Time: ${TimeUtils.getTime(System.currentTimeMillis() - startTime)}"
     }
 
+    // Конвертируем GeoPoint в String в формате пример: "45.23234,-5.532343/44.2424324,-4.435345345" и т.д.
     private fun geoPointsToString(list: List<GeoPoint>): String{
         val strBldr = StringBuilder()
         list.forEach {
             strBldr.append("${it.latitude},${it.longitude}/")
         }
-        Log.d("MyLog", "Points: $strBldr")
         return strBldr.toString()
     }
+
 
     private fun startStopService() {
         if (!isServiceRunning) {
@@ -320,14 +321,6 @@ class MainFragment : Fragment() {
             binding.velosity.text = velocity
             binding.averageVelocity.text = aVelocity
             locationModel = it
-//            trackItem = TrackItem(
-//                null,
-//                getCurentTime(),
-//                TimeUtils.getDate(),
-//                String.format("%.1f", it.distance),
-//                getAverageSpeed(it.distance),
-//                geoPointsToString(it.geoPointsList)
-//            )
             updatePolyLine(it.geoPointsList)
         }
     }
@@ -357,8 +350,6 @@ class MainFragment : Fragment() {
             addLastPoint(list)
         }
     }
-
-
 
     companion object {
         @JvmStatic
