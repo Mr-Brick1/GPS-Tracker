@@ -35,10 +35,10 @@
 - **База данных** – Room (SQLite)
 - **Локация** – Google Play Services FusedLocationProviderClient
 - **Карты** – osmdroid (OpenStreetMap)
-- **Фоновый режим** – Foreground Service + LocalBroadcastManager
+- **Фоновый режим** – Foreground Service
 - **Асинхронность** – Kotlin Coroutines
-- **UI** – Material Design, ConstraintLayout, RecyclerView, CardView
-- **Настройки** – SharedPreferences (через PreferenceFragmentCompat)
+- **UI** – Material Design
+- **Настройки** – SharedPreferences
 
 ## 🚀 Запуск проекта
 
