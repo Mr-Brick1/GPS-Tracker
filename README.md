@@ -25,7 +25,7 @@
 
 | Главный экран (запись) | Диалог сохранения | Список треков | Детали трека |
 |-----------------------|-------------------|---------------|----------------|
-| ![Главный](![photo_2026-04-08_13-57-31](https://github.com/user-attachments/assets/a6dfe302-e8f6-4173-8f37-3e1637637da2)) | ![Сохранение](screenshots/save.jpg) | ![Треки](screenshots/tracks.jpg) | ![Детали](screenshots/details.jpg) |
+| ![Главный](https://github.com/user-attachments/assets/a6dfe302-e8f6-4173-8f37-3e1637637da2) | ![Сохранение](screenshots/save.jpg) | ![Треки](screenshots/tracks.jpg) | ![Детали](screenshots/details.jpg) |
 
 
 ## 🛠️ Технологии
