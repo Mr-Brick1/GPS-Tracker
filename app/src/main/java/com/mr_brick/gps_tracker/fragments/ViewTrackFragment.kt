@@ -15,6 +15,7 @@ import com.mr_brick.gps_tracker.MainApp
 import com.mr_brick.gps_tracker.MainViewModel
 import com.mr_brick.gps_tracker.R
 import com.mr_brick.gps_tracker.databinding.ViewTrackBinding
+import com.mr_brick.gps_tracker.utils.PathUtils
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.util.GeoPoint
@@ -23,7 +24,8 @@ import org.osmdroid.views.overlay.Polyline
 
 class ViewTrackFragment : Fragment() {
 
-    private lateinit var binding: ViewTrackBinding
+    private var _binding: ViewTrackBinding? = null
+    private val binding get() = _binding!!
     private val model : MainViewModel by activityViewModels{
         MainViewModel.ViewModelFactory((requireContext().applicationContext as MainApp).database)
     }
@@ -33,8 +35,13 @@ class ViewTrackFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         settingsOsm()
-        binding = ViewTrackBinding.inflate(inflater, container, false)
+        _binding = ViewTrackBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,9 +52,11 @@ class ViewTrackFragment : Fragment() {
     private fun getTrack() = with(binding){
         model.currentTrack.observe(viewLifecycleOwner){
 
-            val tempDate = "Date: ${it.date}"
-            val tempAverageVelocity = "Average velocity: ${it.velocity} km/h"
-            val tempDistance = "${it.distance} m"
+            val tempDate = getString(R.string.date_value, it.date)
+            val velocityValue = it.velocity.replace(",", ".").toDoubleOrNull() ?: 0.0
+            val tempAverageVelocity = getString(R.string.average_velocity_value, velocityValue)
+            val distanceValue = it.distance.replace(",", ".").toDoubleOrNull() ?: 0.0
+            val tempDistance = getString(R.string.distance_value, distanceValue)
 
             data.text = tempDate
             time.text = it.time
@@ -87,11 +96,17 @@ class ViewTrackFragment : Fragment() {
                 .getString("color_key", "#0000FF")
         )
         val list = geoPoints.split("/")
+        val pointsList = mutableListOf<GeoPoint>()
         list.forEach {
             if(it.isEmpty()) return@forEach
             val points = it.split(",")
-            polyline.addPoint(GeoPoint(points[0].toDouble(), points[1].toDouble()))
+            if (points.size >= 2) {
+                pointsList.add(GeoPoint(points[0].toDouble(), points[1].toDouble()))
+            }
         }
+        val simplifiedPoints = PathUtils.simplifyPath(pointsList, 2.5)
+        val smoothPoints = PathUtils.createSmoothPath(simplifiedPoints, 5)
+        polyline.setPoints(smoothPoints)
         return polyline
     }
 

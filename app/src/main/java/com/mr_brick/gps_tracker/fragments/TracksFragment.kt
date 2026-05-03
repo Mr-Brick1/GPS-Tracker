@@ -16,7 +16,8 @@ import com.mr_brick.gps_tracker.utils.openFragment
 
 class TracksFragment : Fragment(), TrackAdapter.Listener {
 
-    private lateinit var binding: TracksBinding
+    private var _binding: TracksBinding? = null
+    private val binding get() = _binding!!
     private lateinit var adapter: TrackAdapter
     private val model : MainViewModel by activityViewModels{
         MainViewModel.ViewModelFactory((requireContext().applicationContext as MainApp).database)
@@ -26,8 +27,13 @@ class TracksFragment : Fragment(), TrackAdapter.Listener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = TracksBinding.inflate(inflater, container, false)
+        _binding = TracksBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

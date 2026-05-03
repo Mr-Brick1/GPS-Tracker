@@ -29,6 +29,7 @@ class LocationService : Service() {
     private lateinit var locProvider : FusedLocationProviderClient
     private lateinit var locRequest : LocationRequest
     private lateinit var geoPointsList : ArrayList<GeoPoint>
+    private val kalmanFilter = KalmanFilter()
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -37,6 +38,7 @@ class LocationService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startNotification()
         startLocationUpdates()
+        kalmanFilter.reset()
         isRunning = true
         return START_STICKY
     }
@@ -56,12 +58,34 @@ class LocationService : Service() {
     private val locCallBack = object : LocationCallback() {
         override fun onLocationResult(lResult: LocationResult) {
             super.onLocationResult(lResult)
-            val currentLocation = lResult.lastLocation
-            if (lastLocation != null && currentLocation != null) {
-                if(currentLocation.speed > 0.4) {
-                    distance += lastLocation?.distanceTo((currentLocation))!!
-                    geoPointsList.add(GeoPoint(currentLocation.latitude, currentLocation.longitude))
+            val currentLocation = lResult.lastLocation ?: return
+
+            // Ignore points with very low accuracy (e.g. > 50 meters)
+            if (currentLocation.accuracy > 50) return
+
+            // Apply Kalman filter to smooth the coordinates
+            val filteredCoords = kalmanFilter.filter(
+                currentLocation.latitude,
+                currentLocation.longitude,
+                currentLocation.accuracy,
+                currentLocation.time
+            )
+
+            val smoothedLocation = Location(currentLocation).apply {
+                latitude = filteredCoords[0]
+                longitude = filteredCoords[1]
+            }
+
+            if (lastLocation != null) {
+                val distanceToLast = lastLocation?.distanceTo(smoothedLocation) ?: 0.0f
+                
+                // Only count the point if we are actually moving
+                // and the distance from the last point is significant enough to reduce noise
+                if (currentLocation.speed > 0.4 && distanceToLast > 1.5) {
+                    distance += distanceToLast
+                    geoPointsList.add(GeoPoint(smoothedLocation.latitude, smoothedLocation.longitude))
                 }
+
                 val locModel = LocationModel(
                     currentLocation.speed,
                     distance,
@@ -69,10 +93,7 @@ class LocationService : Service() {
                 )
                 sendLocData(locModel)
             }
-            lastLocation = currentLocation
-
-
-
+            lastLocation = smoothedLocation
         }
     }
 

@@ -21,5 +21,14 @@
             android:title="@string/track_color"
             app:icon="@drawable/ic_circle"
             app:summary="@string/track_color_summary" />
+
+        <ListPreference
+            android:defaultValue="en"
+            android:entries="@array/language_name"
+            android:entryValues="@array/language_value"
+            android:key="language_key"
+            android:title="@string/language"
+            app:icon="@drawable/ic_settings"
+            app:summary="@string/language_summary" />
     </PreferenceCategory>
 </PreferenceScreen>

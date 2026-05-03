@@ -9,6 +9,7 @@ import com.mr_brick.gps_tracker.R
 class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var timePref: Preference
     private lateinit var colorPref: Preference
+    private lateinit var languagePref: Preference
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.main_preference, rootKey)
@@ -18,9 +19,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun init() {
         timePref = findPreference("update_time_key")!!
         colorPref = findPreference("color_key")!!
+        languagePref = findPreference("language_key")!!
         val changeListener = onChangeListener()
         timePref.onPreferenceChangeListener = changeListener
         colorPref.onPreferenceChangeListener = changeListener
+        languagePref.onPreferenceChangeListener = changeListener
         initpref()
     }
 
@@ -30,6 +33,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             when (pref.key) {
                 "update_time_key" -> onTimeChanged(value.toString())
                 "color_key" -> pref.icon?.setTint(Color.parseColor(value.toString()))
+                "language_key" -> {
+                    activity?.recreate()
+                }
             }
             true
         }

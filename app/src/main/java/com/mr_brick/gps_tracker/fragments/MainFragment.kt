@@ -55,7 +55,8 @@ class MainFragment : Fragment() {
 
     private var isServiceRunning: Boolean = false // Запущен ли сервис
     private var firstStart: Boolean = true // Первый запуск
-    private lateinit var binding: FragmentMainBinding
+    private var _binding: FragmentMainBinding? = null
+    private val binding get() = _binding!!
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>> // Регистрация разрешений
     private val model: MainViewModel by activityViewModels {
         MainViewModel.ViewModelFactory((requireContext().applicationContext as MainApp).database)
@@ -66,8 +67,13 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         settingsOsm()
-        binding = FragmentMainBinding.inflate(inflater, container, false)
+        _binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -112,7 +118,7 @@ class MainFragment : Fragment() {
                 initOSM()
                 checkLocationEnabled()
             } else {
-                showToast("Вы не дали разрешение на использование местоположения!")
+                showToast(getString(R.string.permission_denied_toast))
             }
         }
     }
@@ -150,7 +156,7 @@ class MainFragment : Fragment() {
                 }
             )
         } else {
-            showToast("Location enabled!")
+            showToast(getString(R.string.location_enabled_toast))
         }
     }
     // Установка слушателя нажатий
@@ -197,7 +203,7 @@ class MainFragment : Fragment() {
 
     // Получение времени с начала маршрута
     private fun getCurentTime() : String{
-        return "Time: ${TimeUtils.getTime(System.currentTimeMillis() - startTime)}"
+        return getString(R.string.time_value, TimeUtils.getTime(System.currentTimeMillis() - startTime))
     }
 
     // Конвертируем GeoPoint в String в формате пример: "45.23234,-5.532343/44.2424324,-4.435345345" и т.д.
@@ -222,7 +228,7 @@ class MainFragment : Fragment() {
                 track,
                 object : DialogManager.Listener{
                 override fun onClick() {
-                    showToast("Track saved!")
+                    showToast(getString(R.string.track_saved_toast))
                     model.insertTrack(track)
                 }
             })
@@ -313,10 +319,9 @@ class MainFragment : Fragment() {
 
     private fun locationUpdates(){
         model.locationUpdates.observe(viewLifecycleOwner){
-            // заменить хард код
-            val distance = "Distance: ${String.format("%.1f", it.distance)} m"
-            val velocity = "Velocity: ${String.format("%.1f", 3.6f * it.velocity)} km/h"
-            val aVelocity = "Average velocity: ${getAverageSpeed(it.distance)} km/h"
+            val distance = getString(R.string.distance_value, it.distance)
+            val velocity = getString(R.string.velocity_value, 3.6f * it.velocity)
+            val aVelocity = getString(R.string.average_velocity_value, getAverageSpeedValue(it.distance))
             binding.distance.text = distance
             binding.velosity.text = velocity
             binding.averageVelocity.text = aVelocity
@@ -326,8 +331,12 @@ class MainFragment : Fragment() {
     }
 
     // Метод для получения средней скорости движения
+    private fun getAverageSpeedValue(distance : Float): Float{
+        return 3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000.0f))
+    }
+
     private fun getAverageSpeed(distance : Float): String{
-        return String.format("%.1f", 3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000.0f)))
+        return String.format("%.1f", getAverageSpeedValue(distance))
     }
 
     // Добавить последнюю зафиксированную точку на карту

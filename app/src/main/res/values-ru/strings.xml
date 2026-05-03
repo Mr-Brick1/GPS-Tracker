@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">GPS-Трекер</string>
+    <string name="home">Главная</string>
+    <string name="tracks">Треки</string>
+    <string name="settings">Настройки</string>
+    <string name="location">Местоположение</string>
+    <string name="update_time">Время обновления</string>
+    <string name="update_time_summary">Время обновления местоположения</string>
+    <string name="track_color">Цвет трека</string>
+    <string name="track_color_summary">Выберите цвет трека</string>
+    <string name="location_disabled">Местоположение отключено</string>
+    <string name="location_dialog_message">Вы хотите включить GPS?</string>
+
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+
+    <string name="date_example">1 Апр. 2023</string>
+
+    <string name="velocity_label">Скорость: </string>
+    <string name="velocity_example">Скорость: 0 км/ч </string>
+    <string name="velocity_description">Скорость</string>
+
+    <string name="time_label">Время: </string>
+    <string name="time_example">Время: 00:00:00 </string>
+    <string name="time_description">Время</string>
+
+    <string name="distance_label">Расстояние: </string>
+    <string name="distance_example">Расстояние: 0 м </string>
+
+    <string name="average_velocity_example">Средняя скорость: 0 км/ч</string>
+
+    <string name="delete_description">Удалить</string>
+
+    <string name="save_track_label">Сохранить этот трек?</string>
+
+    <string name="btn_save">Сохранить</string>
+    <string name="btn_cancel">Отмена</string>
+
+    <string name="zero">0</string>
+
+    <string name="position_description">Позиция</string>
+    <string name="start_stop_description">Старт и Стоп</string>
+
+    <string name="empty">Пусто</string>
+
+    <string name="velocity_value">Скорость: %1$.1f км/ч</string>
+    <string name="time_value">Время: %1$s</string>
+    <string name="distance_value">Расстояние: %1$.1f м</string>
+    <string name="average_velocity_value">Средняя скорость: %1$.1f км/ч</string>
+    <string name="date_value">Дата: %1$s</string>
+
+    <string name="permission_denied_toast">Вы не дали разрешение на использование местоположения!</string>
+    <string name="location_enabled_toast">Местоположение включено!</string>
+    <string name="track_saved_toast">Трек сохранен!</string>
+
+    <string name="language">Язык</string>
+    <string name="language_summary">Выберите язык приложения</string>
+</resources>

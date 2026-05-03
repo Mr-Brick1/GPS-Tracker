@@ -30,12 +30,13 @@ object DialogManager {
         builder.setView(binding.root)
         val dialog = builder.create()
         binding.apply {
-            val time = "${item?.time}"
-            val velocity = "Velocity: ${item?.velocity} km/h"
-            val distance = "Distance: ${item?.distance} m"
-            tvTime.text = time
-            tvAverageVelocity.text = velocity
-            tvDistance.text = distance
+            tvTime.text = item?.time
+
+            val velocityValue = item?.velocity?.replace(",", ".")?.toDoubleOrNull() ?: 0.0
+            tvAverageVelocity.text = context.getString(R.string.average_velocity_value, velocityValue)
+
+            val distanceValue = item?.distance?.replace(",", ".")?.toDoubleOrNull() ?: 0.0
+            tvDistance.text = context.getString(R.string.distance_value, distanceValue)
 
             bSave.setOnClickListener {
                 listener.onClick()

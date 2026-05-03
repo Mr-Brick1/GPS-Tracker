@@ -48,4 +48,16 @@
 
 
 
+    <string name="velocity_value">Velocity: %1$.1f km/h</string>
+    <string name="time_value">Time: %1$s</string>
+    <string name="distance_value">Distance: %1$.1f m</string>
+    <string name="average_velocity_value">Average velocity: %1$.1f km/h</string>
+    <string name="date_value">Date: %1$s</string>
+
+    <string name="permission_denied_toast">You have not given permission to use the location!</string>
+    <string name="location_enabled_toast">Location enabled!</string>
+    <string name="track_saved_toast">Track saved!</string>
+
+    <string name="language">Language</string>
+    <string name="language_summary">Select application language</string>
 </resources>

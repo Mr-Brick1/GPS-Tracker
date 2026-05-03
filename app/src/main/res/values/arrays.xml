@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="loc_time_update_name">
+        <item>1 sec</item>
+        <item>2 sec</item>
         <item>3 sec</item>
         <item>5 sec</item>
         <item>10 sec</item>
     </string-array>
 
     <string-array name="loc_time_update_value">
+        <item>1000</item>
+        <item>2000</item>
         <item>3000</item>
         <item>5000</item>
         <item>10000</item>
@@ -16,11 +20,27 @@
         <item>Blue</item>
         <item>Red</item>
         <item>Black</item>
+        <item>Green</item>
+        <item>Yellow</item>
+        <item>Orange</item>
+        <item>Purple</item>
     </string-array>
-
     <string-array name="color_value">
         <item>#0000FF</item>
         <item>#FF0000</item>
-        <item>#FF000000</item>
+        <item>#000000</item>
+        <item>#4CAF50</item>
+        <item>#FFEB3B</item>
+        <item>#FF9800</item>
+        <item>#9C27B0</item>
+    </string-array>
+
+    <string-array name="language_name">
+        <item>English</item>
+        <item>Русский</item>
+    </string-array>
+    <string-array name="language_value">
+        <item>en</item>
+        <item>ru</item>
     </string-array>
 </resources>

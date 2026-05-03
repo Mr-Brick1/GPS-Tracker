@@ -22,13 +22,16 @@ class TrackAdapter(private val listener: Listener) : ListAdapter<TrackItem, Trac
         }
 
         fun bind(trackItem: TrackItem) = with(binding) {
-
-            val templateVelocity = "Velocity: ${trackItem.velocity} km/h"
+            val context = itemView.context
             trackTemp = trackItem
             tvData.text = trackItem.date
-            tvVelocity.text = templateVelocity
             tvTime.text = trackItem.time
-            tvDistance.text = trackItem.distance
+
+            val velocityValue = trackItem.velocity.replace(",", ".").toDoubleOrNull() ?: 0.0
+            tvVelocity.text = context.getString(R.string.velocity_value, velocityValue)
+
+            val distanceValue = trackItem.distance.replace(",", ".").toDoubleOrNull() ?: 0.0
+            tvDistance.text = context.getString(R.string.distance_value, distanceValue)
         }
 
         override fun onClick(v: View) {

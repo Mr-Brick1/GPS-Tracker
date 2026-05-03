@@ -1,22 +1,30 @@
 package com.mr_brick.gps_tracker
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.mr_brick.gps_tracker.databinding.ActivityMainBinding
 import com.mr_brick.gps_tracker.fragments.MainFragment
 import com.mr_brick.gps_tracker.fragments.SettingsFragment
 import com.mr_brick.gps_tracker.fragments.TracksFragment
+import com.mr_brick.gps_tracker.utils.LocaleHelper
 import com.mr_brick.gps_tracker.utils.openFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         onBottomNavClicks()
-        openFragment(MainFragment.newInstance())
+        if (savedInstanceState == null) {
+            openFragment(MainFragment.newInstance())
+        }
     }
 
     private fun onBottomNavClicks() {
